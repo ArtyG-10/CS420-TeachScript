@@ -30,13 +30,13 @@ public:
 			if (word[0] == '$') {
 				tokens.emplace_back("IDENTIFIER", word);
 			}
-			else if (word.find("declare") != std::string::npos || word.find("assign") != std::string::npos || word == "print" || word == "remainder") {
+			else if (word.find("declare") != std::string::npos || word.find("assign") != std::string::npos || word == "print" || word == "remainder" || word == "add") {
 				tokens.emplace_back("OPERATOR", word);
 			}
 			else if (word.find("type_") != std::string::npos) {
 				tokens.emplace_back("TYPE", word);
 			}
-			else if (word == "if" || word == "for") {
+			else if (word == "if" || word == "for" || word == "loop")  {
 				tokens.emplace_back("KEYWORD", word);
 			}
 			else if (word == ";" || word == "|") {
@@ -115,6 +115,12 @@ public:
 		int divisor = std::stoi(statement[3]);
 		int_vars[statement[6]] = num % divisor;
 	}
+	//ex. add $num to 3 save to $total
+	void add(std::vector<std::string> statement) {
+		int num = int_vars[statement[1]];
+		int num2 = std::stoi(statement[3]);
+		int_vars[statement[6]] = num + num2;
+	}
 	//ex. print $var
 	void print(std::vector<std::string> statement) {
 		if (statement[1].find('$') == 0) {
@@ -125,15 +131,19 @@ public:
 		}
 
 	}
-	//ex. if $rem is_equal_to 0 print equal_to_zero ; |
+	//ex. if $rem is_equal_to 0 : print equal_to_zero ; |
 	void conditional(std::vector<std::string> statement) {
 		int value1 = int_vars[statement[1]];
 		int value2 = std::stoi(statement[3]);
 		if (statement[2] == "is_equal_to") {
 			if (value1 == value2) {
-				std::cout << statement[5] << std::endl;
+				std::cout << statement[6] << std::endl;
 			}
 		}
+	}
+	//ex. loop 20 times over i : if $rem is_equal_to 0 : print i ; | | 
+	void loop(std::vector<std::string> statement) {
+
 	}
 };
 
