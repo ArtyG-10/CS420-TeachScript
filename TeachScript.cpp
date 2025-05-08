@@ -30,7 +30,7 @@ public:
 			if (word[0] == '$') {
 				tokens.emplace_back("IDENTIFIER", word);
 			}
-			else if (word.find("declare") != std::string::npos || word.find("assign") != std::string::npos || word == "print" || word == "remainder" || word == "add") {
+			else if (word.find("declare") != std::string::npos || word.find("assign") != std::string::npos || word == "print" || word == "remainder" || word == "add" || word == "subtract") {
 				tokens.emplace_back("OPERATOR", word);
 			}
 			else if (word.find("type_") != std::string::npos) {
@@ -82,7 +82,6 @@ public:
 				++index;
 				statements.push_back(statement);
 			}
-			
 		} 
 		return statements;
 	}
@@ -121,6 +120,12 @@ public:
 		int num2 = std::stoi(statement[3]);
 		int_vars[statement[6]] = num + num2;
 	}
+	//ex. subtract 3 from $num save to $total
+	void subtract(std::vector<std::string> statement) {
+		int num = std::stoi(statement[1]);
+		int num2 = int_vars[statement[3]];
+		int_vars[statement[6]] = num2 - num;
+	}
 	//ex. print $var
 	void print(std::vector<std::string> statement) {
 		if (statement[1].find('$') == 0) {
@@ -143,7 +148,15 @@ public:
 	}
 	//ex. loop 20 times over i : if $rem is_equal_to 0 : print i ; | | 
 	void loop(std::vector<std::string> statement) {
-
+		for(int i = 0; i<std::stoi(statement[1]) ; ++i){
+			if (statement[6] == "if"){
+				std::vector<std::string> statement2;
+				for(int i=6; i<15; ++i ){
+					statement2.push_back(statement[i]);
+				}
+				conditional(statement2);
+			}
+		}
 	}
 };
 
@@ -169,7 +182,6 @@ int main(int argc, char* argv[]) {
 				std::cout << token.type << " : " << token.value << std::endl;
 			} std::cout << std::endl << "Begin Program Output:" << std::endl << std::endl;
 
-
 			for (std::vector<std::string> statement : statements) {
 				if (statement[0] == "declare_int") {
 					interpreter.declare_int(statement);
@@ -186,8 +198,16 @@ int main(int argc, char* argv[]) {
 				else if (statement[0] == "if") {
 					interpreter.conditional(statement);
 				}
+				else if (statement[0] == "add") {
+					interpreter.add(statement);
+				}
+				else if (statement[0] == "subtract") {
+					interpreter.subtract(statement);
+				}
+				else if (statement[0] == "loop") {
+					interpreter.loop(statement);
+				}
 			}
-			
 			return 0;
 
 		}
